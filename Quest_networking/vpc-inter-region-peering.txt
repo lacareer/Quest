@@ -1,0 +1,191 @@
+Deploy VPC A,B,C,D in us-east-1
+Deploy VPC E us-west-2
+
+Proceed to interconnect them and create a blackhole
+
+
+
+(in  us-west-2 region)
+1. On the top navigation bar, review the Region selector to ensure that the Region is set to Oregon (us-west-2).
+2. In the left navigation pane, scroll down to Transit gateways.
+3. Under Transit gateways, click Transit gateways.
+4. Under Transit gateway ID, highlight and copy the transit gateway ID for remote-tgw to the text editor of your choice on your device.
+5. Go to the next step
+
+(in  us-east-1 region)
+1. On the top navigation bar, review the Region selector to ensure that the Region is set to N. Virginia (us-east-1).
+2. In the left navigation pane, under Transit gateways, click Transit gateway attachments.
+3. In the Transit gateway attachments section, click Create transit gateway attachment.
+4. Go to the next step.
+
+1. In the Details section, for Name tag, type:
+
+remote-vpc-e
+
+2. For Transit gateway ID, on the dropdown menu, choose primary-tgw.
+3. For Attachment type, choose Peering Connection (usually attachment type is VPC for same region connection).
+4. In the Peering connection attachment section, for Region, choose US West (Oregon) (us-west-2).
+5. For Transit gateway (accepter), paste the remote transit gateway ID that you copied earlier.
+6. Scroll down to the bottom of the page, and then click Create transit gateway attachment (not shown).
+7. Go to the next step.
+
+1. Under State, review to ensure that the state of the transit gateway attachment is Pending Acceptance.
+
+- It may take a couple minutes for the state to change from Initiating Request to Pending Acceptance. Click the refresh button until the state changes.
+
+2. Go to the next step.
+
+1. On the top navigation bar, review the Region selector to ensure that the Region is set to Oregon (us-west-2).
+2. In the left navigation pane, under Transit gateways, click Transit gateway attachments.
+3. Choose the check box to select the transit gateway attachment.
+4. On the Details tab, under State, review to ensure that the state of the attachment is Pending Acceptance.
+5. In the Transit gateway attachments section, click to expand the Actions dropdown menu.
+6. Choose Accept transit gateway attachment.
+7. Go to the next step.
+
+1. In the Accept pop-up box, click Accept.
+2. Go to the next step.
+
+1. In the Transit gateway route tables section, choose the check box to select the remote-rt transit gateway route table (your tgw rtb in us-west-2).
+2. Click the Associations tab.
+3. Click Create association.
+4. Go to the next step.
+
+1. For Choose attachment to associate, on the dropdown menu, choose the attachment that contains the word Peering.
+2. Click Create association.
+3. Go to the next step.
+
+1. In Transit gateway route tables section, choose the check box to select the remote-rt transit gateway route table (your tgw rtb in us-west-2). Click the Routes tab.
+2. Scroll down to the Routes section.
+3. Go to the next step.
+
+1. In the Routes section, choose the check box to select the 0.0.0.0/0 static route.
+2. Click to expand the Actions dropdown menu.
+3. Choose Replace static route.
+4. Go the the next step.
+
+1. For Choose attachment, on the dropdown menu, choose the attachment that contains the word Peering.
+2. Click Replace static route.
+
+- You are modifying the default route of the remote Region transit gateway to point to the peering transit gateway. In doing so, you can route traffic other than the local subnet to the peering transit gateway.
+
+3. Go to the next step.
+
+1. In the left navigation pane, scroll up to Virtual private cloud.
+2. Under Virtual private cloud, click Route tables.
+3. In the Route tables section, choose the check box to select the vpc_e-private route table.
+4. Click to expand the Actions dropdown menu.
+5. Choose Edit routes.
+6. Go to the next step.
+
+1. Click Add route.
+2. For Destination, type:
+
+0.0.0.0/0
+
+3. For Target, type:
+
+tgw-
+
+4. Choose the vpc-e transit gateway attachment.
+5. Click Save changes.
+
+- Adding a default route to point to the transit gateway allows VPC E Instance to send non-local traffic to the transit gateway.
+
+6. Go to the next step.
+
+
+1. In the left navigation pane, scroll down to the Transit gateways section.
+2. Under Transit gateways, click Transit gateway route tables.
+3. Go to the next step.
+
+1. On the top navigation bar, review the Region selector to ensure that the Region is set to N. Virginia (us-east-1).
+2. In the left navigation pane, scroll down to Transit gateways.
+3. Under Transit gateways, click Transit gateway route tables.
+4. In the Transit gateway route tables section, choose the check box to select the primary-rt transit gateway route table.
+5. Click the Associations tab.
+6. Click Create association.
+7. Go to the next step.
+
+
+1. For Choose attachment to associate, on the dropdown menu, choose the remote-vpc-e attachment.
+2. Click Create association.
+
+- This adds the remote peering attachment to the primary transit gateway route table.
+
+3. Go to the next step.
+
+1. Under Transit gateways, click Transit gateway route tables. On the Associations tab, review to ensure that the new association with a resource type of Peering is listed.
+2. Click the Routes tab.
+3. Go to the next step.
+
+1. For CIDR, type:
+
+10.4.0.0/16 (vpc E Cidr)
+
+2. For Choose attachment, on the dropdown menu, choose the remote-vpc-e attachment.
+3. Click Create static route.
+
+- You are adding a static route for the VPC E subnet from the remote region pointing to the peering transit gateway association. The transit gateway can now route traffic destined for VPC E.
+
+4. Go to the next step.
+
+NO TEST CONNECTIVITY BY PING INSTANCE FROM ONE REGION TO THE NEXT AND IN VARIOUS SUBNETS. 
+Connectivity should now be established between in VPC's in different regions
+
+#Creating blackholes - preventing inter-vpc communication
+
+In US-EAST-1 DO:
+1. Return to the previous browser tab, and then navigate to the Amazon VPC console (not shown).
+2. In the left navigation pane, under Transit gateways, click Transit gateway route tables.
+3. In the Transit gateway route tables section, choose the check box to select the primary-rt transit gateway route table.
+4. Click to expand the Actions dropdown menu.
+5. Choose Create static route.
+6. Go to the next step.
+
+1. For CIDR, type:
+
+10.1.0.0/24 (vpc B CIDR Subnet)
+
+2.For Type, choose Blackhole.
+3. Click Create static route.
+4. Go to the next step.
+
+
+1. For CIDR, type:
+
+10.3.0.0/24 (vpc D CIDR Subnet)
+
+2.For Type, choose Blackhole.
+3. Click Create static route.
+4. Go to the next step.
+
+1. Return to the browser tab with the terminal window for VPC A Instance (not shown).
+2. In the terminal, run:
+
+ping 10.1.0.10 (instance in VPB B)
+ping 10.3.0.10 (instance in VPB D)
+
+- This will test the connectivity between VPC A Instance (10.0.0.10) and VPC B Instance (10.1.0.10).
+
+3. To exit the running process, on your keyboard, press Ctrl+C (not shown).
+4. Review to see that none of the packets were transmitted and received between both instances.
+
+- The blackhole route in the transit gateway route table is blocking traffic between VPC A and VPC B, and between VPC A and VPC D
+
+5. In the terminal, run:
+
+ping 10.2.0.10
+
+- This will test the connectivity between  VPC A Instance (10.0.0.10) and VPC C Instance (10.2.0.10). Should connect.
+
+6. To exit the running process, on your keyboard, press Ctrl+C (not shown).
+7. Review to see that all the packets were transmitted and received between both instances.
+8. Go to the next step.
+
+
+
+
+
+
+

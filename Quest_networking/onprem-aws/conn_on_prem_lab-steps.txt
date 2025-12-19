@@ -1,0 +1,224 @@
+ONPREM CIDR: 10.1.0.0/21
+AWS CIDR: 10.0.0.0/21
+ON-PREM FILE SERVER: 192.168.1.10
+Networking Instance is on AWS
+onprem router: eni-0908472fa214420b6
+onprem public subnet EIP: 98.90.86.81
+TUNNEL1: 169.254.142.100/30
+TUNNEL2: 169.254.142.72/30
+Tunnel-1 Pre-Shared Key: 1B4LxufSyBFBrHTRpqJjSwnk2F1mpisZ
+Tunnel-2 Pre-Shared Key: oAzPhmGZLULlF5WVD61sy5dhTiabwerQ
+Tunnel-1 Outside Virtual Private Gateway: 35.172.188.247
+Tunnel-2 Outside Virtual Private Gateway: 100.24.144.209
+
+
+
+
+1. In the left navigation pane, scroll down to Virtual private network (VPN).
+2. Click Customer gateways.
+3. In the Customer gateways section, click Create customer gateway.
+4. Go to the next step.
+
+1. For Name tag, type:
+
+marsToAws_CGW
+
+2. For BGP ASN, type:
+
+65534
+
+3. For IP address, paste the On-Prem Source - Public Subnet (elastic IP)IP address that you copied in the earlier step.
+4. Scroll down to the bottom of the page, and then click Create customer gateway (not shown).
+5. Go to the next step.
+
+
+1. In the left navigation pane, scroll down to Virtual private network (VPN).
+2. Click Site-to-Site VPN connections.
+3. In the VPN connections section, click Create VPN connection.
+4. Go to the next step.
+
+1. For Name tag, type:
+
+marsToAws_VPN
+
+2. For Target gateway type, choose Transit gateway.
+3. For Transit gateway, on the dropdown menu, choose marsToAwsTransitGateway.
+4. For Customer gateway, choose Existing.
+5. For Customer gateway ID, choose marsToAws_CGW.
+6. For Routing options, choose Static.
+7. Scroll down to the bottom of the page, and then click Create VPN connection (not shown).
+8. Go to the next step.
+
+1. In the VPN connections section, choose the radio button to select the marsToAws_VPN connection.
+2. Click the Tunnel details tab.
+3. Under Outside IP address, review the provided addresses for Tunnel 1 and Tunnel 2.
+
+- You will use this information in the later DIY section of this solution.
+
+4. Click Download configuration at the top.
+5. Go to the next step.
+
+1. In the pop-up box, for Vendor, choose Generic.
+2. Keep the default for all other settings.
+3. Click Download, and then save the vpn-xxxxxx.txt file to an accessible location on your device.
+4. To close the pop-up box, click the X.
+5. Go to the next step.
+
+1. On your device, open the vpn-xxxxx.txt file that you just downloaded (not shown).
+2. In the IPSec Tunnel #1 section, under #1: Internet Key Exchange Configuration, select (highlight) and copy, without the key, just the value of the Pre-Shared Key (something like - Pre-Shared Key: xxxxxxxxxx).
+3. Go to the next step.
+
+1. On your device, open the conn_on_prem_lab.txt file that you downloaded at the beginning of the lab (not shown).
+2. On the TUNNEL_1_PRESHARED_KEY line, to replace [ENTER_PSK_HERE], paste the Pre-Shared Key value that you copied in an earlier step.
+3. Go to the next step
+
+1. In the vpn-xxxx.txt file, in the IPSec Tunnel #1 section, scroll down to the #3: Tunnel Interface Configuration subsection.
+
+- You will alternate between these two open files in the next steps.
+
+2. Under Outside IP Addresses, select (highlight) and copy the IP address for Virtual Private Gateway.
+3. Go to the next step.
+
+1. In the conn_on_prem_lab.txt file, on the TUNNEL_2_PRESHARED_KEY line, to replace [ENTER_PSK_HERE], paste the Pre-Shared Key value that you just copied.
+2. Go to the next step.
+
+1. In the vpn-xxxx.txt file, in the IPSec Tunnel #2 section, scroll down to the #3: Tunnel Interface Configuration subsection.
+2. Under Outside IP Addresses, select and copy the IP address for Virtual Private Gateway.
+3. Go to the next step.
+
+1. In the Amazon EC2 console, in the left navigation pane, click Instances.
+2. In the Instances section, choose the check box to select On-Prem VPN Router.
+3. Click Connect.
+4. Go to the next step.
+
+1. In the terminal window, at the command prompt, paste the four lines that you copied from Section 1 of the conn_on_prem_lab.txt file, and then press Enter.
+
+- Remember, if needed, you can click inside the black area to enable typing at the prompt. You will see a white box appear next to the $.
+
+2. Return to the conn_on_prem_lab.txt file, and then copy the six lines in Section 2 (not shown).
+3. Go to the next step.
+
+1. In the terminal, run (type the command and press Enter):
+
+sudo systemctl enable strongswan
+
+2. In the terminal, run:
+
+sudo strongswan start
+
+3. In the terminal, run:
+
+sudo strongswan up tunnel1 (use 'down' to shut off tunnel1)
+sudo strongswan up tunnel2 (use 'down' to shut off tunnel2)
+
+4. In the terminal, run: 
+
+sudo strongswan status
+
+- Refer to this step for assistance in the later DIY section.
+
+5. Go to the next step.
+
+1. In the status command output, review to ensure that tunnel1 displays both ESTABLISHED and INSTALLED.
+2. Close the browser tab that contains the command prompt (not shown).
+3. Go to the next step
+
+1. In the VPC console, in the left navigation pane, under Virtual private cloud, click Route tables.
+2. In the Route tables section, choose the check box to select Remote Target - Private Subnet 1a (should be my aws vpc private subnet in my workshop case).
+3. Click the Routes tab.
+4. Click Edit routes.
+5. Go to the next step.
+
+1. Click Add route.
+2. Go to the next step.
+
+1. For Destination, type:
+
+10.1.0.0/21 (ONPREM CIDR)
+
+- This is the CIDR for the On-Prem Source Network.
+
+2. For Target, on the dropdown menu, choose Transit Gateway, and then choose marsToAWS_TGW_Attachment_VPC (not shown).
+3. Click Save changes.
+4. Go to the next step.
+
+1. Repeat the previous Add route process for the following subnets:
+
+Remote Target - Private Subnet 1b
+Remote Target - Public Subnet 1a
+Remote Target - Public Subnet 1b
+
+- When completed, all four Remote Target subnets should have edited route tables.
+
+2. Go to the next step.
+
+1. Choose the check box to select On-Prem Source - Private Subnet.
+2. Click the Routes tab.
+3. Click Edit routes.
+4. Go to the next step.
+
+1. Click Add route.
+2. Go to the next step.
+
+1. For Destination, type:
+
+10.0.0.0/21 (AWS VPC CIDR)
+
+- This is the CIDR for the Remote Target VPC.
+
+2. For Target, choose Network Interface, and then choose the interface that matches the eni- interface (onprem router eni) that you copied in the earlier step.
+4. Click Save changes.
+
+- By setting this route, traffic from the Target VPC is directed to the VPN Router instance.
+
+5. Go to the next step.
+
+1. In the left navigation pane, scroll down to Transit gateways.
+2. Click Transit gateway route tables.
+3. In the Transit gateway route tables section, choose the check box to select the available route table.
+4. Click the Routes tab (not shown).
+5. Click Create static route.
+6. Go to the next step.
+
+1. For CIDR, type:
+
+10.1.0.0/21
+
+- This is the CIDR for the On-Prem Source Network.
+
+2. For Type, keep the default of Active (not shown).
+3. For Choose attachment, choose the attachment that starts with vpn- (VPN attachment).
+4. Click Create static route.
+5. Go to the next step.
+
+1. Navigate to the Instances section in the Amazon EC2 console.
+
+- Remember, on the top navigation bar, you can use the Services search box (or click Services) to navigate to a different service console.
+
+2. In the Instances section, choose the check box to select Network Testing Instance.
+3. Click Connect.
+4. On the Session Manager tab, click Connect (not shown).
+5. Go to the next step.
+
+1. In the terminal, type:
+
+ping
+
+2. Paste the private IP address of the On-Prem File Server that you copied in an earlier step, and then press Enter.
+
+- The IP address will start with 10.1.
+
+3. Review the successful responses.
+4. To exit the command, press Ctrl+C (not shown).
+5. Review the results that display 0% packet loss.
+
+- Refer to this step for assistance in the upcoming DIY section.
+
+6. Close the browser tab containing the command prompt.
+7. Go to the next step.
+
+
+
+
+
+

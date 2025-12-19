@@ -1,0 +1,69 @@
+Comment: A description of my state machine
+StartAt: TransitGatewayPeering
+States:
+  TransitGatewayPeering:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    Parameters:
+      FunctionName: arn:aws:lambda:us-east-1:761625114829:function:peer-transit-gateway:$LATEST
+      Payload:
+        Input.$: $
+    Retry:
+      - ErrorEquals:
+          - Lambda.ServiceException
+          - Lambda.AWSLambdaException
+          - Lambda.SdkClientException
+          - Lambda.TooManyRequestsException
+        IntervalSeconds: 1
+        MaxAttempts: 3
+        BackoffRate: 2
+        JitterStrategy: FULL
+    Next: Wait 1 minute
+  Wait 1 minute:
+    Type: Wait
+    Seconds: 60
+    Next: Get Status
+  Get Status:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    Parameters:
+      FunctionName: arn:aws:lambda:us-east-1:761625114829:function:get-transit-gateway-peering-status:$LATEST
+      Payload:
+        Input.$: $
+    Retry:
+      - ErrorEquals:
+          - Lambda.ServiceException
+          - Lambda.AWSLambdaException
+          - Lambda.SdkClientException
+          - Lambda.TooManyRequestsException
+        IntervalSeconds: 1
+        MaxAttempts: 3
+        BackoffRate: 2
+        JitterStrategy: FULL
+    Next: Job Complete?
+  Job Complete?:
+    Type: Choice
+    Choices:
+      - Next: Modify transit-gateway route tables
+        Variable: $.Payload.status
+        StringEquals: available
+    Default: Wait 1 minute
+  Modify transit-gateway route tables:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    Parameters:
+      FunctionName: arn:aws:lambda:us-east-1:761625114829:function:diy-modify-transit-gateway-all-routes:$LATEST
+      Payload:
+        Input.$: $
+    Retry:
+      - ErrorEquals:
+          - Lambda.ServiceException
+          - Lambda.AWSLambdaException
+          - Lambda.SdkClientException
+          - Lambda.TooManyRequestsException
+        IntervalSeconds: 1
+        MaxAttempts: 3
+        BackoffRate: 2
+        JitterStrategy: FULL
+    End: true
+QueryLanguage: JSONPath
