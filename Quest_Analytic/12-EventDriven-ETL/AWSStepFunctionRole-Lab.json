@@ -1,0 +1,91 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": "us-east-1"
+                }
+            },
+            "Action": [
+                "athena:getDataCatalog",
+                "athena:getQueryExecution",
+                "athena:getQueryResults",
+                "athena:startQueryExecution",
+                "athena:stopQueryExecution",
+                "glue:BatchCreatePartition",
+                "glue:BatchDeletePartition",
+                "glue:BatchDeleteTable",
+                "glue:BatchGetCrawlers",
+                "glue:BatchGetPartition",
+                "glue:BatchStopJobRun",
+                "glue:CreateDatabase",
+                "glue:CreatePartition",
+                "glue:CreateTable",
+                "glue:DeleteDatabase",
+                "glue:DeletePartition",
+                "glue:DeleteTable",
+                "glue:GetCrawler",
+                "glue:GetCrawlerMetrics",
+                "glue:GetCrawlers",
+                "glue:GetDatabase",
+                "glue:GetDatabases",
+                "glue:GetJobRun",
+                "glue:GetJobRuns",
+                "glue:GetPartition",
+                "glue:GetPartitions",
+                "glue:GetTable",
+                "glue:GetTables",
+                "glue:StartCrawler",
+                "glue:StartJobRun",
+                "glue:UpdateDatabase",
+                "glue:UpdatePartition",
+                "glue:UpdateTable",
+                "lakeformation:GetDataAccess",
+                "lambda:InvokeFunction",
+                "logs:CreateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:DescribeLogGroups",
+                "logs:DescribeResourcePolicies",
+                "logs:GetLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:UpdateLogDelivery",
+                "s3:AbortMultipartUpload",
+                "s3:CreateBucket",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject",
+                "sns:Publish",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:PutTelemetryRecords",
+                "xray:PutTraceSegments"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:553225903739:function:gbl_lab_monitoring",
+                "arn:aws:iam::553225903739:role/LabStack-c1a3e936-0ffc-40-GblLabMonitoringgbllabmon-bKDd8iTqvgsg",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-I2pJvYCy0ybI",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-StdB4CI0Wzgv",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-QRU6kAsFtZab",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-ktg0XTwx6Ukw",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-v3pOmO5mRcH4",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-EJG2sNZI8qlB"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}

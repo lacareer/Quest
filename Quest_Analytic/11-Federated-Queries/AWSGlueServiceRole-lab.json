@@ -1,0 +1,21 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": "us-east-1"
+                }
+            },
+            "Action": [
+                "cloudwatch:*",
+                "glue:*",
+                "logs:*",
+                "s3:*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "VisualEditor0"
+        }
+    ]
+}

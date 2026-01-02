@@ -1,0 +1,57 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "glue:GetTable",
+                "glue:GetTableVersion",
+                "glue:GetTableVersions"
+            ],
+            "Resource": [
+                "arn:aws:glue:us-east-1:186526355503:catalog",
+                "arn:aws:glue:us-east-1:186526355503:database/conversion",
+                "arn:aws:glue:us-east-1:186526355503:table/conversion/conversion_table"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": "us-east-1"
+                }
+            },
+            "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::consumption-bucket-186526355503-bf4453e0/*",
+                "arn:aws:s3:::consumption-bucket-186526355503-bf4453e0"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:186526355503:function:gbl_lab_monitoring",
+                "arn:aws:iam::186526355503:role/LabStack-c1a3e936-0ffc-40-GblLabMonitoringgbllabmon-9Dpmfxxziw1p",
+                "arn:aws:events:us-east-1:186526355503:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-k8BbWef8Aypt",
+                "arn:aws:events:us-east-1:186526355503:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-Fq7tFI2VWIye",
+                "arn:aws:events:us-east-1:186526355503:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-vMuVVCVY6ynI",
+                "arn:aws:events:us-east-1:186526355503:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-hiicGO1SlAYn",
+                "arn:aws:events:us-east-1:186526355503:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-ykOEMiFwfAds",
+                "arn:aws:events:us-east-1:186526355503:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-QisOqBj3pisg"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}

@@ -1,0 +1,53 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "kinesis:*",
+                "kms:Decrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+            ],
+            "Resource": [
+                "arn:aws:s3:::kinesis-flink-application-d4f5bbf0",
+                "arn:aws:s3:::kinesis-flink-application-d4f5bbf0/*"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:us-west-2:*:log-group:/aws/kinesis-analytics/*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:553225903739:function:gbl_lab_monitoring",
+                "arn:aws:iam::553225903739:role/LabStack-c1a3e936-0ffc-40-GblLabMonitoringgbllabmon-eWhy09280j15",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-kWOX6vOh2bdx",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-W1TVmOw1aINA",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-QWp4QKafB57v",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-X3NcYgd7uYaP",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-K9Otu6zUbNrK",
+                "arn:aws:events:us-east-1:553225903739:rule/LabStack-c1a3e936-0ffc-40-GblLabMonitoringmonitorin-5RF5mBBmHSps"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}

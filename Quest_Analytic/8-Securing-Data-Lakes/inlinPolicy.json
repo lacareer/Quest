@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "s3:putObject",
+            "Resource": "arn:aws:s3:::<YOUR_BUCKET_NAME>/queries/*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": "s3:getObject",
+            "Resource": "arn:aws:s3:::<YOUR_BUCKET_NAME>/*",
+            "Effect": "Allow"
+        }
+    ]
+}
